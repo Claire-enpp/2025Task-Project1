@@ -26,11 +26,18 @@ while n < maxn:
 
     if n == maxn-1:
         print("AI小助手提醒您：再进行一轮对话就达到最大次数限制啦！")
-        a = int(input("若想保留近两轮对话，请输入1；否则请输入0："))
+        a = int(input("若想保留上述对话内容总结，请输入1；否则请输入0："))
 
     if n == maxn:
         if a == 1:
-            history = history[-4:];n = 2
-            print("已保留近两轮对话，可继续进行对话")
+            summary_prompt = "请帮我总结一下以下对话内容，要求只保留以下对话内容的关键信息：" + str(history)
+            summary_response = client.chat.completions.create(  
+                model="ernie-x1.1-preview",
+                messages=summary_prompt
+                max_tokens=1000
+            )
+            summary = summary_response.choices[0].message.content
+            history = [{"role": "system", "content": summary}]
+            print("已保留上述对话内容总结，可继续对话")
         else:
             print("对话已结束")
